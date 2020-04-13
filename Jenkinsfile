@@ -6,9 +6,9 @@ import groovy.json.JsonSlurperClassic
 node {
     
  
-    def SF_CONSUMER_KEY=env.SF_CONSUMER_KEY
-    def SF_USERNAME=env.SF_USERNAME
-    def SERVER_KEY_CREDENTALS_ID=env.SERVER_KEY_CREDENTALS_ID
+    def SF_CONSUMER_KEY=env.SF_CONSUMER_KEY_INF
+    def SF_USERNAME=env.SF_USERNAME_INF
+    def SERVER_KEY_CREDENTALS_ID=env.SERVER_KEY_CREDENTALS_ID_INF
     def TEST_LEVEL='RunLocalTests'
     def PACKAGE_NAME='0Ho2x000000fxSVCAY'
     
@@ -58,8 +58,6 @@ node {
 		  }
 		catch(err)
             {
-               // echo err.getMessage()
-             //  echo 'error occured'
                 
             }
 	    }
