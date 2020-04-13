@@ -122,24 +122,23 @@ node {
 
         stage('Install Package In Sandbox Org') {
             
-            rc = command "${toolbelt}\\sfdx force:package:install --targetusername SFDC_INF_Org --package ${PACKAGE_VERSION} --wait 10 --publishwait 10 --noprompt --json"
-            // rc = command "${toolbelt}\\sfdx force:package:install --package ${PACKAGE_VERSION} --targetusername installorg --wait 10"
-		    if (rc != 0) {
+       //     rc = command "${toolbelt}\\sfdx force:package:install --targetusername SFDC_INF_Org --package ${PACKAGE_VERSION} --wait 10 --publishwait 10 --noprompt --json"
+       	    if (rc != 0) {
 			error 'Salesforce package install failed.'
 		    }
             }
 	stage('Production Deployment Approval'){
-    		input 'Do you want to deploy package to Production?'
+    	//	input 'Do you want to deploy package to Production?'
 		}
 	stage('Authorize Production'){
 		echo "Authenticate Sandbox Org to install package to"
-		rc = command "${toolbelt}\\sfdx force:auth:sfdxurl:store -f package-sfdx-project.json -s -a ProdOrg"
+	//	rc = command "${toolbelt}\\sfdx force:auth:sfdxurl:store -f package-sfdx-project.json -s -a ProdOrg"
 		 if (rc != 0) {
                 	error 'Authorization to Production failed.'
             		}
     		}
     	stage('Install Package to Production'){
-        	rc = command "${toolbelt}\\sfdx force:package:install --targetusername ProdOrg --package ${PACKAGE_VERSION} --wait 10 --publishwait 10 --noprompt --json"
+        //	rc = command "${toolbelt}\\sfdx force:package:install --targetusername ProdOrg --package ${PACKAGE_VERSION} --wait 10 --publishwait 10 --noprompt --json"
         		if (rc != 0) {
                 		error 'Salesforce package install failed.'
             			}
