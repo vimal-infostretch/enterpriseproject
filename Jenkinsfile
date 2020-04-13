@@ -67,47 +67,20 @@ node {
             }
 	    }
 	    
-	    
-       
-        // -------------------------------------------------------------------------
-        // Create package version.
-        // -------------------------------------------------------------------------
-
-        stage('Create Package Version') {
-           
-                    if (isUnix()) {
-                        output = sh returnStdout: true, script: "${toolbelt}\\sfdx force:package:version:create --package ${PACKAGE_NAME} --installationkeybypass --wait 10 --json --targetdevhubusername DevHub"
-                    } else {
-                        output = bat(returnStdout: true, script: "${toolbelt}\\sfdx force:package:version:create --package ${PACKAGE_NAME} --installationkeybypass --wait 10 --json --targetdevhubusername DevHub").trim()
-                        output = output.readLines().drop(1).join(" ")
-            }
-
-
-            // Wait 5 minutes for package replication.
-            sleep 300
-            
-            try{
-               // echo "Before json call"
-             def jsonSlurper = new JsonSlurperClassic()
-            def response = jsonSlurper.parseText(output)
-//echo "Before Package creation"
-            PACKAGE_VERSION = response.result.SubscriberPackageVersionId
-            response = null
-
-          //  echo ${PACKAGE_VERSION}
-            }
-            catch(err)
-            {
-                echo $err
-                
-            }
-		    
-          }
-        // -------------------------------------------------------------------------
-        // Authenticate Sandbox org to install package to.
-        // -------------------------------------------------------------------------
-
-        stage('Authorize Sandbox Org') {
+	    //---------------------------------------------------------------------
+	    // Convert source to Metadata format for deployment
+	    //---------------------------------------------------------------------
+	    stage('Convert source to Metadata')
+	    {
+		    dir('mdapioutput')
+		    {
+			     rc = command "${toolbelt}\\sfdx force:source:convert -d mdapioutput\\"			    
+			     if (rc != 0) {
+                		error 'Conversion from Source to Metatdata Failed!'
+            			}
+		    }
+	    }
+	    stage('Authorize Sandbox Org') {
           
             echo "Authenticate Sandbox Org to install package to"
             rc = command "${toolbelt}\\sfdx force:auth:sfdxurl:store -f package-sfdx-project.json -s -a SFDC_INF_Org"
@@ -115,23 +88,20 @@ node {
             if (rc != 0) {
                 error 'Authorization to Salesforce failed.'
             }
+		    
            
         }
-
-
+	    stage('Deploy to Sandbox'){
+		
+		    rc = command "${toolbelt}\\sfdx force:mdapi:deploy -d mdapioutput/ -u SFDC_INF_Org -w 100"
+            //rc = command "${toolbelt}\\sfdx force:org:create --targetdevhubusername DevHub --setdefaultusername --definitionfile config/project-scratch-def.json --setalias installorg --wait 10 --durationdays 1"
+            if (rc != 0) {
+                error 'Deployment of application failed.'
+            	}
+		    
+	    }
        
-
-        // -------------------------------------------------------------------------
-        // Install package in Sandbox org.
-        // -------------------------------------------------------------------------
-
-        stage('Install Package In Sandbox Org') {
-            
-            rc = command "${toolbelt}\\sfdx force:package:install --targetusername SFDC_INF_Org --package ${PACKAGE_VERSION} --wait 10 --publishwait 10 --noprompt --json"
-       	    if (rc != 0) {
-			error 'Salesforce package install failed.'
-		    }
-            }
+       
 	stage('Production Deployment Approval'){
     	//	input 'Do you want to deploy package to Production?'
 		}
