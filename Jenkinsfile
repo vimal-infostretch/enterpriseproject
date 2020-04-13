@@ -72,9 +72,12 @@ node {
 	    //---------------------------------------------------------------------
 	    stage('Convert source to Metadata')
 	    {
+		    
+
 		    dir('mdapioutput')
 		    {
-			     rc = command "${toolbelt}\\sfdx force:source:convert -d mdapioutput\\"			    
+			    rc = command "${toolbelt}\\sfdx force:source:convert -r force-app -d mdapioutput -n 'metatdataPackage'"
+			    
 			     if (rc != 0) {
                 		error 'Conversion from Source to Metatdata Failed!'
             			}
