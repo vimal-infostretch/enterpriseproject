@@ -122,7 +122,7 @@ node {
 
         stage('Install Package In Sandbox Org') {
             
-       //     rc = command "${toolbelt}\\sfdx force:package:install --targetusername SFDC_INF_Org --package ${PACKAGE_VERSION} --wait 10 --publishwait 10 --noprompt --json"
+            rc = command "${toolbelt}\\sfdx force:package:install --targetusername SFDC_INF_Org --package ${PACKAGE_VERSION} --wait 10 --publishwait 10 --noprompt --json"
        	    if (rc != 0) {
 			error 'Salesforce package install failed.'
 		    }
