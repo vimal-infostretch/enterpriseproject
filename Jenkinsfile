@@ -100,6 +100,15 @@ node {
             if (rc != 0) {
                 error 'Deployment of application failed.'
             	}
+		    else
+		    {
+			    
+			    echo 'Displaying Sandbox Org Information'
+			    rc = command "${toolbelt}\\sfdx force:org:display -u SFDC_INF_Org"
+			    if(rc!=0){
+				    error 'Error in showing Sandbox Org information.'
+			    }
+		    }
 		    
 	    }
        
